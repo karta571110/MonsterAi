@@ -9,7 +9,7 @@ public class TurtleAby : MonsterAby
     private Animator ani;
     private NavMeshAgent agent;
     private Transform trans;//初始位置
-    
+
 
     public Vector3 initialPosition;
     public float wanderRadius = 9;          //游走半径，移动状态下，如果超出游走半径会返回出生位置
@@ -35,7 +35,7 @@ public class TurtleAby : MonsterAby
 
     private bool is_Warned = false;
     private bool is_Running = false;
-    public TurtleAby(string Name, float Hp, float Speed, float AttackNum, float DefendNum, Animator animator, Transform Trans,NavMeshAgent handleAgent)
+    public TurtleAby(string Name, float Hp, float Speed, float AttackNum, float DefendNum, Animator animator, Transform Trans, NavMeshAgent handleAgent)
     {
         name = Name;
         hp = Hp;
@@ -129,10 +129,10 @@ public class TurtleAby : MonsterAby
                 EnemyDistanceCheck();
                 break;
             case MonsterState.Attack:
-                if (Time.time - lastActTime > ani.GetCurrentAnimatorStateInfo(0).length )
+                if (Time.time - lastActTime > ani.GetCurrentAnimatorStateInfo(0).length)
                 {
                     lastActTime = Time.time;
-                    if (distanceToPlayer < 1.3f)                     
+                    if (distanceToPlayer < 1.3f)
                     {
                         ani.SetTrigger("Attack01");
                         Debug.Log("Ack1");
@@ -142,7 +142,7 @@ public class TurtleAby : MonsterAby
                         ani.SetTrigger("Attack02");
                         Debug.Log("Ack2");
                     }
-                    
+
                 }
                 is_Running = false;
                 is_Warned = false;
@@ -157,7 +157,6 @@ public class TurtleAby : MonsterAby
                 //该状态下的检测指令
                 ReturnCheck();
                 break;
-
         }
     }
 
@@ -168,6 +167,10 @@ public class TurtleAby : MonsterAby
     {
         distanceToPlayer = Vector3.Distance(playerUnit.transform.position, trans.position);
         Debug.Log(distanceToPlayer);
+        if (currentState == MonsterState.Chase)
+            agent.enabled = true;
+        else
+            agent.enabled = false;
         if (distanceToPlayer < attackRange)
         {
             currentState = MonsterState.Attack;
@@ -240,12 +243,12 @@ public class TurtleAby : MonsterAby
         {
             currentState = MonsterState.Return;
         }
-       else if (distanceToPlayer < attackRange)
+        else if (distanceToPlayer < attackRange)
         {
             currentState = MonsterState.Attack;
         }
         //如果超出追击范围或者敌人的距离超出警戒距离就返回
-       
+
     }
 
     /// <summary>
@@ -306,13 +309,8 @@ public class TurtleAby : MonsterAby
     public override void Check()
     {
         playerUnit = GameObject.FindGameObjectWithTag("Player");
-
-
         //保存初始位置信息
         initialPosition = trans.position;
-
-
-
         //1. 自卫半径不大于警戒半径，否则就无法触发警戒状态，直接开始追击了
         defendRadius = Mathf.Min(alertRadius, defendRadius);
         //2. 攻击距离不大于自卫半径，否则就无法触发追击状态，直接开始战斗了
@@ -323,5 +321,5 @@ public class TurtleAby : MonsterAby
         RandomAction();
     }
 
-    
+
 }
