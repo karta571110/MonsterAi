@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class TurtleAby : MonsterAby
 {
     private GameObject playerUnit;//獲取玩家單位
     private Animator ani;
+    private NavMeshAgent agent;
     private Transform trans;//初始位置
     
 
@@ -33,7 +35,7 @@ public class TurtleAby : MonsterAby
 
     private bool is_Warned = false;
     private bool is_Running = false;
-    public TurtleAby(string Name, float Hp, float Speed, float AttackNum, float DefendNum, Animator animator, Transform Trans)
+    public TurtleAby(string Name, float Hp, float Speed, float AttackNum, float DefendNum, Animator animator, Transform Trans,NavMeshAgent handleAgent)
     {
         name = Name;
         hp = Hp;
@@ -42,7 +44,7 @@ public class TurtleAby : MonsterAby
         defendNum = DefendNum;
         ani = animator;
         trans = Trans;
-        
+        agent = handleAgent;
     }
     public override void AttackAct()
     {
@@ -117,7 +119,8 @@ public class TurtleAby : MonsterAby
                     ani.SetTrigger("Run");
                     is_Running = true;
                 }
-                trans.Translate(Vector3.forward * Time.deltaTime * runSpeed);
+                agent.SetDestination(playerUnit.transform.position);
+                //trans.Translate(Vector3.forward * Time.deltaTime * runSpeed);
                 //朝向玩家位置
                 targetRotation = Quaternion.LookRotation(playerUnit.transform.position - trans.position, Vector3.up);
                 trans.rotation = Quaternion.Slerp(trans.rotation, targetRotation, turnSpeed);

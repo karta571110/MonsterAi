@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class TurtleHandler : MonoBehaviour
 {
+    public NavMeshAgent agent;
     public MonsterAby aby;
     private Animator ani;
     private Transform trans;//初始位置
@@ -22,10 +24,11 @@ public class TurtleHandler : MonoBehaviour
 
     private void Awake()
     {
+        agent = GetComponent<NavMeshAgent>();
         collider = GetComponentInChildren<CapsuleCollider>();
         trans = GetComponent<Transform>();
         ani = GetComponent<Animator>();
-        aby = new TurtleAby(name, hp, speed, attackNum, defendNum, ani, trans);
+        aby = new TurtleAby(name, hp, speed, attackNum, defendNum, ani, trans,agent);
         
     }
     // Start is called before the first frame update
