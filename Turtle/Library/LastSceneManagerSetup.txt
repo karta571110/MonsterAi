@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Turtle/Scenes/SampleScene.unity
+- path: Assets/Turtle/Scenes/AIScene.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

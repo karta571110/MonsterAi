@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public abstract class MonsterAby
+public abstract class MonsterAby :Property
 {
-    protected string name;
-    public Animator ani;
+    
     float _hp;
     public float hp
     {
@@ -72,6 +72,8 @@ public abstract class MonsterAby
 /// <param name="currentState">目前狀態</param>
     public abstract void ChangeState();
     public abstract void Check();
+
+    
 
 
 }

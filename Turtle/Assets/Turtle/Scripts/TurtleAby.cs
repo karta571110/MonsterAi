@@ -5,36 +5,7 @@ using UnityEngine.AI;
 
 public class TurtleAby : MonsterAby
 {
-    private GameObject playerUnit;//獲取玩家單位
-    private Animator ani;
-    private NavMeshAgent agent;
-    private Transform trans;//初始位置
-
-
-    public Vector3 initialPosition;
-    public float wanderRadius = 9;          //游走半径，移动状态下，如果超出游走半径会返回出生位置
-    public float alertRadius = 15;         //警戒半径，玩家进入后怪物会发出警告，并一直面朝玩家
-    public float defendRadius = 9;          //自卫半径，玩家进入后怪物会追击玩家，当距离<攻击距离则会发动攻击（或者触发战斗）
-    public float chaseRadius = 30;            //追击半径，当怪物超出追击半径后会放弃追击，返回追击起始位置
-
-    public float attackRange = 2f;            //攻击距离
-    public float walkSpeed = 1;          //移动速度
-    public float runSpeed = 2;          //跑动速度
-    public float turnSpeed = 0.1f;         //转身速度，建议0.1
-
-
-    private MonsterAby.MonsterState currentState = MonsterAby.MonsterState.Idle;//閒置時間
-    private float[] actionWeight = { 3000, 3000, 4000 };//设置待机时各种动作的权重，顺序依次为呼吸、观察、移动
-    public float actRestTime = 5f;//更換待機指令的間隔時間
-    private float lastActTime;//最近一次指令時間
-    private float attackTime = 1.5f;//怪物攻擊冷卻
-
-    private float distanceToPlayer;//與玩家距離
-    private float distanceToInitial;//怪物與初始位置的距離
-    private Quaternion targetRotation;//怪物的目標朝向
-
-    private bool is_Warned = false;
-    private bool is_Running = false;
+    
     public TurtleAby(string Name, float Hp, float Speed, float AttackNum, float DefendNum, Animator animator, Transform Trans, NavMeshAgent handleAgent)
     {
         name = Name;
@@ -45,6 +16,16 @@ public class TurtleAby : MonsterAby
         ani = animator;
         trans = Trans;
         agent = handleAgent;
+        wanderRadius = 9;
+        alertRadius = 15;
+        defendRadius = 9;
+        chaseRadius = 30;
+        attackRange = 2f;
+        walkSpeed = 1;
+        runSpeed = 2;
+        turnSpeed = 0.1f;
+        actionWeight = new float[] { 3000, 3000, 4000 };
+        actRestTime = 5f;
     }
     public override void AttackAct()
     {
@@ -167,19 +148,19 @@ public class TurtleAby : MonsterAby
     {
         distanceToPlayer = Vector3.Distance(playerUnit.transform.position, trans.position);
         Debug.Log(distanceToPlayer);
-        if (currentState == MonsterState.Chase)
+        if (currentState == MonsterState.Chase && detectPlayer)
             agent.enabled = true;
         else
             agent.enabled = false;
-        if (distanceToPlayer < attackRange)
+        if (distanceToPlayer < attackRange && detectPlayer)
         {
             currentState = MonsterState.Attack;
         }
-        else if (distanceToPlayer < defendRadius)
+        else if (distanceToPlayer < defendRadius && detectPlayer)
         {
             currentState = MonsterState.Chase;
         }
-        else if (distanceToPlayer < alertRadius)
+        else if (distanceToPlayer < alertRadius && detectPlayer)
         {
             currentState = MonsterState.Warn;
         }
@@ -191,13 +172,13 @@ public class TurtleAby : MonsterAby
     {
         is_Running = false;
         distanceToPlayer = Vector3.Distance(playerUnit.transform.position, trans.position);
-        if (distanceToPlayer < defendRadius)
+        if (distanceToPlayer < defendRadius && detectPlayer)
         {
             is_Warned = false;
             currentState = MonsterState.Chase;
         }
 
-        if (distanceToPlayer > alertRadius)
+        if (distanceToPlayer > alertRadius )
         {
             is_Warned = false;
             RandomAction();
@@ -211,15 +192,15 @@ public class TurtleAby : MonsterAby
         distanceToPlayer = Vector3.Distance(playerUnit.transform.position, trans.position);
         distanceToInitial = Vector3.Distance(trans.position, initialPosition);
 
-        if (distanceToPlayer < attackRange)
+        if (distanceToPlayer < attackRange && detectPlayer)
         {
             currentState = MonsterState.Attack;
         }
-        else if (distanceToPlayer < defendRadius)
+        else if (distanceToPlayer < defendRadius && detectPlayer)
         {
             currentState = MonsterState.Chase;
         }
-        else if (distanceToPlayer < alertRadius)
+        else if (distanceToPlayer < alertRadius && detectPlayer)
         {
             currentState = MonsterState.Warn;
         }
@@ -239,11 +220,11 @@ public class TurtleAby : MonsterAby
         distanceToPlayer = Vector3.Distance(playerUnit.transform.position, trans.position);
         distanceToInitial = Vector3.Distance(trans.position, initialPosition);
 
-        if (distanceToInitial > chaseRadius || distanceToPlayer > alertRadius)
+        if (distanceToInitial > chaseRadius || distanceToPlayer > alertRadius )
         {
             currentState = MonsterState.Return;
         }
-        else if (distanceToPlayer < attackRange)
+        else if (distanceToPlayer < attackRange && detectPlayer)
         {
             currentState = MonsterState.Attack;
         }
